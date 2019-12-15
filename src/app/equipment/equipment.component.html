@@ -1,7 +1,20 @@
 <h3>Equipment</h3>
 <ul>
-  <li>Habitat dome</li>
-  <li>Drones</li>
-  <li>Food containers</li>
-  <li>Oxygen tanks</li>
+
+  <li *ngFor='let oneEquipment of equipmentList'>
+
+    <span *ngIf="!editingEquipment[equipmentList.indexOf(oneEquipment)]; else editEquipmentBlock">
+      <span class="editable-text" (click)="editingEquipment[equipmentList.indexOf(oneEquipment)] = true;">{{ oneEquipment }} 
+      <button (click)="remove(oneEquipment)">remove</button> </span>
+    </span>
+    
+    <ng-template #editEquipmentBlock>
+        <input #ooneEquipment (keyup.enter)="updateEquipment(ooneEquipment.value.trim(), oneEquipment)" value="{{ oneEquipment }}"/>
+        <button (click)="updateEquipment(ooneEquipment.value.trim(), oneEquipment)">save</button>
+    </ng-template>
+
+  </li>
 </ul>
+
+<input #name type="text" (keyup.enter)="add(name.value.trim()); name.value=''" placeholder="add equipment">
+<button (click)="add(name.value.trim()); name.value=''">Add</button>

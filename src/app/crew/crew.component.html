@@ -16,6 +16,6 @@
   </li>
 
 </ul>
-<input #name type="text" placeholder="type name">
+<input #name type="text" (keyup.enter)="add(name.value.trim(), firstMission.checked); name.value=''; firstMission.checked=false" placeholder="add crew member">
 <label>First mission <input #firstMission type="checkbox"></label>
-<button (click)="add(name.value, firstMission.checked)">Add</button>
+<button (click)="add(name.value.trim(), firstMission.checked); name.value=''; firstMission.checked=false">Add</button>

@@ -1,6 +1,20 @@
 <h3>Experiments</h3>
 <ul>
-  <li>Mars soil sample</li>
-  <li>Plant growth in habitat</li>
-  <li>Human bone density</li>
+  <li *ngFor='let oneExperiment  of experimentsList'>
+
+  <span *ngIf="!editingExperiment[experimentsList.indexOf(oneExperiment)]; else editExperimentBlock">
+      <span class="editable-text" (click)="editingExperiment[experimentsList.indexOf(oneExperiment)] = true;">{{ oneExperiment }} 
+      <button (click)="remove(oneExperiment)">remove</button> </span>
+    </span>
+    
+    <ng-template #editExperimentBlock>
+        <input #ooneExperiment (keyup.enter)="updateExperiment(ooneExperiment.value.trim(), oneExperiment)" value="{{ oneExperiment }}"/>
+        <button (click)="updateExperiment(ooneExperiment.value.trim(), oneExperiment)">save</button>
+    </ng-template>
+
+  </li>
 </ul>
+
+<input #name type="text" (keyup.enter)="add(name.value.trim()); name.value=''" placeholder="add experiment">
+<button (click)="add(name.value.trim()); name.value=''">Add</button>
+    
