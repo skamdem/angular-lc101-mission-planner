@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class EquipmentComponent implements OnInit {
   enableItems : boolean[]= [];
   nearMaxMass : boolean = false;
+  numberOfTimesAdded : number[] = [];
 
   equipmentItems: object[] = [
       {name: 'Duct Tape', mass: 0.5},
@@ -28,13 +29,15 @@ export class EquipmentComponent implements OnInit {
   constructor() {
     for (let i = 0; i< this.equipmentItems.length; i++){
       this.enableItems.push(false);
+      this.numberOfTimesAdded.push(0);
     }
   }
 
   ngOnInit() { }
 
-  // Code your addItem function here:
-  //When clicked, an Add to Cargo Hold button adds the selected equipment to the cargoHold array and updates the cargoMass variable
+  //Code your addItem function here:
+  //Add to Cargo Hold button adds the selected equipment to
+  //the cargoHold array and updates the cargoMass variable
   addItem(equipment :object){
     let isWithin200kg : Boolean = false;
     this.cargoHold.push(equipment);
@@ -42,11 +45,22 @@ export class EquipmentComponent implements OnInit {
     if (Math.abs(this.cargoMass - this.maximumAllowedMass) <= 200){
       isWithin200kg = true;
     }
-    this.updateEnableItems();
-    return isWithin200kg;
-  }
-  
-  updateEnableItems(){
+
+    let objIndex = this.getIndexInEquipmentItems(equipment);
+    if (objIndex != -1){
+      this.numberOfTimesAdded[objIndex] += 1;
+      //prevent the same item from being added more than twice
+      if (this.numberOfTimesAdded[objIndex] == 2){
+        this.enableItems[objIndex] = true;
+      }
+    }
+    
+    //prevent the same item from being added more than once
+    /*let objIndex = this.getIndexInEquipmentItems(equipment);
+    if (objIndex != -1){
+      this.enableItems[objIndex] = true;
+    }*/
+    
     //If all of the cargo hold spots are full (cargoHold.length === maxItems), disable the button.
     if (this.cargoHold.length === this.maxItems){
       for (let i = 0; i< this.enableItems.length; i++){
@@ -54,12 +68,37 @@ export class EquipmentComponent implements OnInit {
       }
     }
 
-    //If adding the item to the cargo hold would exceed maximumAllowedMass, disable the button.
+    //If adding an item to the cargo hold would exceed maximumAllowedMass, disable the button.
     for (let i = 0; i< this.enableItems.length; i++){
       if ((this.cargoMass + this.equipmentItems[i]['mass']) > this.maximumAllowedMass){
         this.enableItems[i] = true;
       }
     }
+    return isWithin200kg;
+  }
+
+  //get index of object within array equipmentItems
+  getIndexInEquipmentItems(obj:object):number{
+    let indexInEquipmentItems:number = -1;
+    for(let i = 0; i < this.equipmentItems.length; i++) {
+      if (this.equipmentItems[i]['name'] === obj['name']){
+        indexInEquipmentItems = i;
+        break;
+      }
+    }
+    return indexInEquipmentItems;
+  }
+
+  //get index of object within array cargoHold
+  getIndexIncargoHold(obj:object):number{
+    let indexInCargoHold:number = -1;
+    for(let i = 0; i < this.cargoHold.length; i++) {
+      if (this.cargoHold[i]['name'] === obj['name']) {
+        indexInCargoHold = i;
+        break;
+      }
+    }
+    return indexInCargoHold;
   }
 
   emptyHold(){
@@ -69,7 +108,36 @@ export class EquipmentComponent implements OnInit {
     this.nearMaxMass = false;
     for (let i = 0; i< this.equipmentItems.length; i++){
       this.enableItems.push(false);
+      this.numberOfTimesAdded[i]=0;
     }
+  }
+
+  removeEquipment(equipment){
+    let isWithin200kg : Boolean = false;
+    let objIndexIncargo = this.getIndexIncargoHold(equipment);
+    let objIndexInEquipment = this.getIndexInEquipmentItems(equipment);
+    if (objIndexInEquipment != -1){
+      this.numberOfTimesAdded[objIndexInEquipment] -= 1;
+      this.enableItems[objIndexInEquipment] = false;
+    }
+    
+    this.cargoHold.splice(objIndexIncargo,1);
+    this.cargoMass -= equipment['mass'];
+    if (Math.abs(this.cargoMass - this.maximumAllowedMass) <= 200){
+      isWithin200kg = true;
+    }
+
+    //enable the button for items that when previously added to the cargo hold
+    // would exceed maximumAllowedMass
+    for (let i = 0; i< this.enableItems.length; i++){
+      if (this.numberOfTimesAdded[i] < 2){
+        if ((this.cargoMass + this.equipmentItems[i]['mass']) <= this.maximumAllowedMass){
+          this.enableItems[i] = false;
+        }
+      }      
+    }
+
+    return isWithin200kg;
   }
   
 }

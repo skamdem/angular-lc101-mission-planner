@@ -27,3 +27,7 @@ h3 {
 .visible {
     visibility: hidden;
 }
+.img-bottom{
+    text-align: center;
+    margin:0;
+}

@@ -1,7 +1,13 @@
 <div class="displayBox">
     <h3>Possible Experiments</h3>
     <ul>
-      <li *ngFor="let experiment of experiments">{{experiment}}</li>
+      <li *ngFor="let experiment of experiments" [class.selected]="selectedExperiments[getIndexInGlobalExperimentsArray(experiment)]" (click) = "addExperiment(experiment)">{{experiment}}</li>
     </ul>
 </div>
 <hr>
+<div class="displayBox">
+  <h3> {{selectedExperimentsArray.length}}/{{maxExperimentsNumber}}&nbsp; Experiments selected <span [class.visible]="!experimentsIsFull">Full</span></h3>
+  <ol>
+      <li *ngFor="let oneExperiment of selectedExperimentsArray" (click)="removeExperiment(oneExperiment)">{{oneExperiment}}</li>
+  </ol>
+</div>
